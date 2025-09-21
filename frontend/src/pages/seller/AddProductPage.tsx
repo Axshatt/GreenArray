@@ -4,7 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useProducts } from '../../contexts/ProductContext';
 
 function AddProductPage() {
-  const { user } = useAuth();
+   const user = localStorage.getItem("token")
   const { addProduct } = useProducts();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -25,6 +25,7 @@ function AddProductPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+   
     if (!user) return;
 
     setError(null);
@@ -35,6 +36,7 @@ function AddProductPage() {
         ...formData,
         price: parseFloat(formData.price),
         stock: parseInt(formData.stock),
+
       });
       navigate('/seller');
     } catch (err: any) {
@@ -52,7 +54,7 @@ function AddProductPage() {
     }));
   };
 
-  if (!user?.is_seller) {
+  if (!user) {
     return (
       <div className="max-w-2xl mx-auto p-6">
         <div className="text-center">
