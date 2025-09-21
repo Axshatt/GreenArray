@@ -35,14 +35,14 @@ export const useAuth = () => {
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(() => {
-    const stored = localStorage.getItem('token');
+    const stored = localStorage.getItem('user');
     return stored ? JSON.parse(stored) : null;
   });
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (user) {
-      localStorage.setItem('token', JSON.stringify(user));
+      localStorage.setItem('user', JSON.stringify(user));
     } else {
       localStorage.removeItem('user');
     }
@@ -54,7 +54,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const res = await api.post('https://greenarray-1.onrender.com/api/auth/signin', { email, password });
       setUser(res.data.user);
       // Save is_seller in localStorage
-      localStorage.setItem('token', JSON.stringify({ ...res.data.user, is_seller: res.data.user.is_seller }));
+      localStorage.setItem('user', JSON.stringify({ ...res.data.user, is_seller: res.data.user.is_seller }));
     } catch (err) {
       throw err;
     } finally {
@@ -72,7 +72,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
       setUser(res.data.user);
       // Save is_seller in localStorage
-      localStorage.setItem('token', JSON.stringify({ ...res.data.user, is_seller: res.data.user.is_seller }));
+      localStorage.setItem('user', JSON.stringify({ ...res.data.user, is_seller: res.data.user.is_seller }));
     } catch (err) {
       throw err;
     } finally {
@@ -82,7 +82,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signOut = async () => {
     setUser(null);
-    localStorage.removeItem('token');
+    localStorage.removeItem('user');
     // Optionally, call backend to invalidate session
   };
 
@@ -116,7 +116,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const getAllUsers = async (): Promise<User[]> => {
     setLoading(true);
     try {
-  const res = await api.get('https://greenarray-1.onrender.com/api/auth/users');
+  const res = await api.get('https://greenarray-1.onrender.com/api/auth/api/auth/users');
       return res.data.users;
     } catch (err) {
       throw err;
