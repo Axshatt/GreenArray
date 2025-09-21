@@ -51,7 +51,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signIn = async (email: string, password: string) => {
     setLoading(true);
     try {
-  const res = await api.post('api/auth/signin', { email, password });
+  const res = await api.post('https://greenarray-1.onrender.com/api/auth/signin', { email, password });
       setUser(res.data.user);
       // Save is_seller in localStorage
       localStorage.setItem('user', JSON.stringify({ ...res.data.user, is_seller: res.data.user.is_seller }));
@@ -65,7 +65,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signUp = async (email: string, password: string, fullName: string) => {
     setLoading(true);
     try {
-  const res = await api.post('api/auth/signup', {
+  const res = await api.post('https://greenarray-1.onrender.com/api/auth/signup', {
         email,
         password,
         fullname: fullName,
@@ -116,7 +116,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const getAllUsers = async (): Promise<User[]> => {
     setLoading(true);
     try {
-  const res = await api.get('api/auth/users');
+  const res = await api.get('https://greenarray-1.onrender.com/api/auth/users');
       return res.data.users;
     } catch (err) {
       throw err;

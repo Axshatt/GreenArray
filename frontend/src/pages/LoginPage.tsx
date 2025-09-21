@@ -14,7 +14,7 @@ function LoginPage() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/auth/signin", {
+      const res = await fetch("https://greenarray-1.onrender.com/api/auth/signin", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
