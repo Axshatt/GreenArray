@@ -1,7 +1,8 @@
-import React from "react"
+
+import React, { useEffect, useState } from "react";
+import axios from 'axios';
 import { useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useProducts } from '../contexts/ProductContext';
 import ProductCard from '../components/ProductCard';
 
 function useQuery() {
@@ -10,13 +11,29 @@ function useQuery() {
 }
 
 function ProductsPage() {
-  const { products, loading } = useProducts();
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const query = useQuery();
   const searchTerm = query.get('search')?.toLowerCase() || '';
 
+  useEffect(() => {
+    async function fetchProducts() {
+      setLoading(true);
+      try {
+        const res = await axios.get('/api/products');
+        setProducts(res.data);
+      } catch (err) {
+        setProducts([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchProducts();
+  }, []);
+
   const filtered = useMemo(() => {
     if (!searchTerm) return products;
-    return products.filter(p =>
+    return products.filter((p: any) =>
       p.name.toLowerCase().includes(searchTerm) ||
       p.description.toLowerCase().includes(searchTerm) ||
       p.category.toLowerCase().includes(searchTerm)
@@ -36,7 +53,7 @@ function ProductsPage() {
         <div className="py-16 text-center text-gray-500">No plants found.</div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filtered.map(product => (
+          {filtered.map((product: any) => (
             <ProductCard key={product._id} product={product} />
           ))}
         </div>

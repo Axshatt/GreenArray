@@ -4,60 +4,55 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useProducts, Product } from '../../contexts/ProductContext';
 
 function SellerDashboard() {
-  const { user } = useAuth();
-  const { fetchSellerProducts } = useProducts();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
-  const [isSeller, setIsSeller] = useState(false);
+
+  // Check for token in localStorage
+  const token = localStorage.getItem('token');
+  const isSignedIn = !!token;
 
   useEffect(() => {
-    if (user?.is_seller) {
-      loadProducts();
+    async function fetchProducts() {
+      setLoading(true);
+      try {
+        const response = await fetch('/api/products');
+        if (!response.ok) throw new Error('Failed to fetch products');
+        const data = await response.json();
+        setProducts(data);
+      } catch (err) {
+        // Optionally handle error
+      } finally {
+        setLoading(false);
+      }
     }
-  }, [user]);
-
-  const loadProducts = async () => {
-    if (!user) return;
-    setLoading(true);
-    try {
-      const sellerProducts = await fetchSellerProducts(user.id);
-      setProducts(sellerProducts);
-    } catch (error) {
-      console.error('Error loading products:', error);
-    } finally {
-      setLoading(false);
+    if (isSignedIn) {
+      fetchProducts();
     }
-  };
+  }, [isSignedIn]);
 
-  const becomeSeller = async () => {
-    if (!user) return;
-    try {
-      // This will be handled by the AuthContext updateUser function
-      setIsSeller(true);
-      // Refresh user context
-      window.location.reload();
-    } catch (error) {
-      console.error('Error becoming seller:', error);
-    }
-  };
-
-  if (!user) {
+  if (!isSignedIn) {
     return <div className="max-w-4xl mx-auto p-6">Please sign in to access seller dashboard.</div>;
   }
 
-  if (!user.is_seller && !isSeller) {
-    return (
-      <div className="max-w-4xl mx-auto p-6">
-        <h1 className="text-2xl font-bold mb-4">Become a Seller</h1>
-        <p className="mb-6">Start selling your plants on our platform!</p>
-        <button
-          onClick={becomeSeller}
-          className="bg-green-600 text-white px-6 py-3 rounded hover:bg-green-700"
-        >
-          Become a Seller
-        </button>
-      </div>
-    );
+  // Delete product handler
+  async function handleDelete(productId: string) {
+    if (!confirm('Are you sure you want to delete this product?')) return;
+    try {
+      setLoading(true);
+      const response = await fetch(`/api/products/${productId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          token: `${token}`,
+        },
+      });
+      if (!response.ok) throw new Error('Failed to delete product');
+      setProducts(products.filter(p => p._id !== productId));
+    } catch (err) {
+      alert('Error deleting product');
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -87,7 +82,7 @@ function SellerDashboard() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {products.map(product => (
-            <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+            <div key={product._id} className="bg-white rounded-lg shadow-md overflow-hidden">
               <img
                 src={product.image}
                 alt={product.name}
@@ -101,18 +96,9 @@ function SellerDashboard() {
                   <span className="text-sm text-gray-500">Stock: {product.stock}</span>
                 </div>
                 <div className="flex space-x-2">
-                  <Link
-                    to={`/seller/edit-product/${product.id}`}
-                    className="flex-1 bg-blue-600 text-white py-2 px-3 rounded text-center text-sm hover:bg-blue-700"
-                  >
-                    Edit
-                  </Link>
+                  
                   <button
-                    onClick={() => {
-                      if (confirm('Are you sure you want to delete this product?')) {
-                        // Handle delete
-                      }
-                    }}
+                    onClick={() => handleDelete(product._id)}
                     className="flex-1 bg-red-600 text-white py-2 px-3 rounded text-sm hover:bg-red-700"
                   >
                     Delete

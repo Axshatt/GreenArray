@@ -34,21 +34,27 @@ export const useAuth = () => {
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(() => {
+    const stored = localStorage.getItem('user');
+    return stored ? JSON.parse(stored) : null;
+  });
   const [loading, setLoading] = useState(false);
 
-  // Example: fetch user from localStorage or backend
   useEffect(() => {
-    // TODO: Implement session persistence if needed
-  }, []);
+    if (user) {
+      localStorage.setItem('user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('user');
+    }
+  }, [user]);
 
   const signIn = async (email: string, password: string) => {
-    console.log(email);
-    
     setLoading(true);
     try {
       const res = await axios.post('http://localhost:5000/api/auth/signin', { email, password });
       setUser(res.data.user);
+      // Save is_seller in localStorage
+      localStorage.setItem('user', JSON.stringify({ ...res.data.user, is_seller: res.data.user.is_seller }));
     } catch (err) {
       throw err;
     } finally {
@@ -57,7 +63,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signUp = async (email: string, password: string, fullName: string) => {
-       console.log(email);
     setLoading(true);
     try {
       const res = await axios.post('http://localhost:5000/api/auth/signup', {
@@ -66,8 +71,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         fullname: fullName,
       });
       setUser(res.data.user);
-      console.log(res.data.user);
-      
+      // Save is_seller in localStorage
+      localStorage.setItem('user', JSON.stringify({ ...res.data.user, is_seller: res.data.user.is_seller }));
     } catch (err) {
       throw err;
     } finally {
@@ -77,6 +82,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signOut = async () => {
     setUser(null);
+    localStorage.removeItem('user');
     // Optionally, call backend to invalidate session
   };
 
@@ -86,6 +92,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const res = await axios.put(`/api/auth/profile`, updates);
       setUser(res.data.user);
+      // Save is_seller in localStorage
+      localStorage.setItem('user', JSON.stringify({ ...res.data.user, is_seller: res.data.user.is_seller }));
     } catch (err) {
       throw err;
     } finally {

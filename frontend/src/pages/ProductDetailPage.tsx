@@ -1,14 +1,29 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useProducts } from '../contexts/ProductContext';
 import { useCart } from '../contexts/CartContext';
 
 function ProductDetailPage() {
   const { id } = useParams();
-  const { products, loading } = useProducts();
   const { addItem } = useCart();
+  const [product, setProduct] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-  const product = useMemo(() => products.find(p => p._id === id), [products, id]);
+  useEffect(() => {
+    async function fetchProduct() {
+      setLoading(true);
+      try {
+        const response = await fetch(`/api/products/${id}`);
+        if (!response.ok) throw new Error('Failed to fetch product');
+        const data = await response.json();
+        setProduct(data);
+      } catch (err) {
+        setProduct(null);
+      } finally {
+        setLoading(false);
+      }
+    }
+    if (id) fetchProduct();
+  }, [id]);
 
   if (loading) {
     return <div className="max-w-5xl mx-auto p-6 text-gray-500">Loading...</div>;

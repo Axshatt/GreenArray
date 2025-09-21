@@ -48,7 +48,7 @@ authRoutes.post("/signin", async (req, res) => {
       { expiresIn: "1h" }
     );
 
-    res.json({ token, user: { id: user._id, fullName: user.fullName, email: user.email } });
+  res.json({ token, user: { id: user._id, fullName: user.fullName, email: user.email, is_seller: user.is_seller || false } });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

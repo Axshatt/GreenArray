@@ -14,14 +14,28 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
-    addItem({
+    const item = {
       id: product._id,
       name: product.name,
       price: product.price,
       image: product.image,
-      maxQuantity: product.stock
-    });
+      maxQuantity: product.stock,
+      quantity: 1
+    };
+    addItem(item);
+    // Update localStorage
+    try {
+    const stored = localStorage.getItem('cart');
+      let cart = [];
+      if (stored) cart = JSON.parse(stored);
+      const idx = cart.findIndex((i: any) => i.id === item.id);
+      if (idx > -1) {
+        cart[idx].quantity = Math.min(cart[idx].quantity + 1, item.maxQuantity);
+      } else {
+        cart.push(item);
+      }
+  localStorage.setItem('cart', JSON.stringify(cart));
+    } catch {}
   };
 
   const getDifficultyColor = (difficulty: string) => {
