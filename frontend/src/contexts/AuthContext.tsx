@@ -35,14 +35,14 @@ export const useAuth = () => {
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(() => {
-    const stored = localStorage.getItem('user');
+    const stored = localStorage.getItem('token');
     return stored ? JSON.parse(stored) : null;
   });
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (user) {
-      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('token', JSON.stringify(user));
     } else {
       localStorage.removeItem('user');
     }
@@ -54,7 +54,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const res = await api.post('https://greenarray-1.onrender.com/api/auth/signin', { email, password });
       setUser(res.data.user);
       // Save is_seller in localStorage
-      localStorage.setItem('user', JSON.stringify({ ...res.data.user, is_seller: res.data.user.is_seller }));
+      localStorage.setItem('token', JSON.stringify({ ...res.data.user, is_seller: res.data.user.is_seller }));
     } catch (err) {
       throw err;
     } finally {
@@ -72,7 +72,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
       setUser(res.data.user);
       // Save is_seller in localStorage
-      localStorage.setItem('user', JSON.stringify({ ...res.data.user, is_seller: res.data.user.is_seller }));
+      localStorage.setItem('token', JSON.stringify({ ...res.data.user, is_seller: res.data.user.is_seller }));
     } catch (err) {
       throw err;
     } finally {
@@ -82,7 +82,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signOut = async () => {
     setUser(null);
-    localStorage.removeItem('user');
+    localStorage.removeItem('token');
     // Optionally, call backend to invalidate session
   };
 
