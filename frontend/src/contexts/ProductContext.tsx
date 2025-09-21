@@ -49,7 +49,7 @@ export const ProductProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const fetchProducts = async () => {
     setLoading(true);
     try {
-  const res = await api.get('api/products');
+  const res = await api.get('https://greenarray-1.onrender.com/api/products');
       // Ensure products is always an array
       if (Array.isArray(res.data)) {
         setProducts(res.data);
@@ -69,7 +69,7 @@ export const ProductProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const addProduct = async (product: Omit<Product, '_id' | 'created_at'>) => {
     setLoading(true);
     try {
-  const res = await api.post('api/products', product);
+  const res = await api.post('https://greenarray-1.onrender.com/api/products', product);
       setProducts(prev => [res.data, ...prev]);
     } catch (error) {
       console.error('Error adding product:', error);
@@ -82,7 +82,7 @@ export const ProductProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const updateProduct = async (id: string, product: Partial<Product>) => {
     setLoading(true);
     try {
-  const res = await api.put(`api/products/${id}`, product);
+  const res = await api.put(`https://greenarray-1.onrender.com/api/products/${id}`, product);
       setProducts(prev => prev.map(p => p._id === id ? res.data : p));
     } catch (error) {
       console.error('Error updating product:', error);
