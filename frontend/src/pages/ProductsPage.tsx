@@ -20,7 +20,7 @@ function ProductsPage() {
     async function fetchProducts() {
       setLoading(true);
       try {
-        const res = await axios.get('/api/products');
+        const res = await axios.get('https://greenarray-1.onrender.com/api/products');
         setProducts(res.data);
       } catch (err) {
         setProducts([]);

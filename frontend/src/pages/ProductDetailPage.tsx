@@ -12,7 +12,7 @@ function ProductDetailPage() {
     async function fetchProduct() {
       setLoading(true);
       try {
-        const response = await fetch(`/api/products/${id}`);
+        const response = await fetch(`https://greenarray-1.onrender.com/api/products/${id}`);
         if (!response.ok) throw new Error('Failed to fetch product');
         const data = await response.json();
         setProduct(data);
