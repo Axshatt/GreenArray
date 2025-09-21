@@ -1,4 +1,8 @@
 {
+   "scripts": {
+    "start": "cd backend && npm i && node index.js",
+    "dev": "nodemon index.js"
+  },
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "mongoose": "^8.18.1"
