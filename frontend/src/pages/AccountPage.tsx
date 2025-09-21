@@ -17,7 +17,7 @@ function AccountPage() {
       return;
     }
 
-    fetch("http://localhost:5000/api/users/me", {
+    fetch("https://greenarray-1.onrender.com/api/users/me", {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,

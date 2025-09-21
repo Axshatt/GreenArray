@@ -2,17 +2,13 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useProducts } from '../../contexts/ProductContext';
-import axios from 'axios';
 
 function AddProductPage() {
-
+  const { user } = useAuth();
+  const { addProduct } = useProducts();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  // Get token and user from localStorage
-  const token = localStorage.getItem('token');
-  // const user = localStorage.getItem('user') ;
 
   const [formData, setFormData] = useState({
     name: '',
@@ -29,17 +25,16 @@ function AddProductPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!token ) return;
+    if (!user) return;
 
     setError(null);
     setLoading(true);
 
     try {
-      await axios.post('/api/products', {
+      await addProduct({
         ...formData,
         price: parseFloat(formData.price),
         stock: parseInt(formData.stock),
-      
       });
       navigate('/seller');
     } catch (err: any) {
@@ -57,12 +52,12 @@ function AddProductPage() {
     }));
   };
 
-  if (!token) {
+  if (!user?.is_seller) {
     return (
       <div className="max-w-2xl mx-auto p-6">
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">Access Denied</h1>
-          <p>You need to be signed in to add products.</p>
+          <p>You need to be a seller to add products.</p>
         </div>
       </div>
     );

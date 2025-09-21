@@ -1,6 +1,6 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import { api } from '../lib/api';
 
 export interface Product {
   _id: string;
@@ -49,7 +49,7 @@ export const ProductProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('/api/products');
+  const res = await api.get('api/products');
       // Ensure products is always an array
       if (Array.isArray(res.data)) {
         setProducts(res.data);
@@ -69,7 +69,7 @@ export const ProductProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const addProduct = async (product: Omit<Product, '_id' | 'created_at'>) => {
     setLoading(true);
     try {
-      const res = await axios.post('/api/products', product);
+  const res = await api.post('api/products', product);
       setProducts(prev => [res.data, ...prev]);
     } catch (error) {
       console.error('Error adding product:', error);
@@ -82,7 +82,7 @@ export const ProductProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const updateProduct = async (id: string, product: Partial<Product>) => {
     setLoading(true);
     try {
-      const res = await axios.put(`/api/products/${id}`, product);
+  const res = await api.put(`api/products/${id}`, product);
       setProducts(prev => prev.map(p => p._id === id ? res.data : p));
     } catch (error) {
       console.error('Error updating product:', error);
@@ -95,7 +95,7 @@ export const ProductProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const deleteProduct = async (id: string) => {
     setLoading(true);
     try {
-      await axios.delete(`/api/products/${id}`);
+  await api.delete(`api/products/${id}`);
       setProducts(prev => prev.filter(p => p._id !== id));
     } catch (error) {
       console.error('Error deleting product:', error);
@@ -108,7 +108,7 @@ export const ProductProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const fetchSellerProducts = async (sellerId: string): Promise<Product[]> => {
     setLoading(true);
     try {
-      const res = await axios.get(`/api/products?seller=${sellerId}`);
+  const res = await api.get(`api/products?seller=${sellerId}`);
       return res.data;
     } catch (error) {
       console.error('Error fetching seller products:', error);
@@ -121,7 +121,7 @@ export const ProductProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const getProductById = async (id: string): Promise<Product | null> => {
     setLoading(true);
     try {
-      const res = await axios.get(`/api/products/${id}`);
+  const res = await api.get(`api/products/${id}`);
       return res.data;
     } catch (error) {
       console.error('Error fetching product by ID:', error);
@@ -134,7 +134,7 @@ export const ProductProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const searchProducts = async (query: string): Promise<Product[]> => {
     setLoading(true);
     try {
-      const res = await axios.get(`/api/products?search=${encodeURIComponent(query)}`);
+  const res = await api.get(`api/products?search=${encodeURIComponent(query)}`);
       return res.data;
     } catch (error) {
       console.error('Error searching products:', error);
@@ -147,7 +147,7 @@ export const ProductProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const getProductsByCategory = async (category: string): Promise<Product[]> => {
     setLoading(true);
     try {
-      const res = await axios.get(`/api/products?category=${encodeURIComponent(category)}`);
+  const res = await api.get(`api/products?category=${encodeURIComponent(category)}`);
       return res.data;
     } catch (error) {
       console.error('Error fetching products by category:', error);
@@ -160,7 +160,7 @@ export const ProductProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const getFeaturedProducts = async (): Promise<Product[]> => {
     setLoading(true);
     try {
-      const res = await axios.get('/api/products?featured=true');
+  const res = await api.get('api/products?featured=true');
       return res.data;
     } catch (error) {
       console.error('Error fetching featured products:', error);

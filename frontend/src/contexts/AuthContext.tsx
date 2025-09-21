@@ -1,7 +1,7 @@
 
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import { api } from '../lib/api';
 
 interface User {
   _id: string;
@@ -51,7 +51,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signIn = async (email: string, password: string) => {
     setLoading(true);
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/signin', { email, password });
+  const res = await api.post('api/auth/signin', { email, password });
       setUser(res.data.user);
       // Save is_seller in localStorage
       localStorage.setItem('user', JSON.stringify({ ...res.data.user, is_seller: res.data.user.is_seller }));
@@ -65,7 +65,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signUp = async (email: string, password: string, fullName: string) => {
     setLoading(true);
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/signup', {
+  const res = await api.post('api/auth/signup', {
         email,
         password,
         fullname: fullName,
@@ -90,7 +90,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!user) throw new Error('No user logged in');
     setLoading(true);
     try {
-      const res = await axios.put(`/api/auth/profile`, updates);
+  const res = await api.put('api/auth/profile', updates);
       setUser(res.data.user);
       // Save is_seller in localStorage
       localStorage.setItem('user', JSON.stringify({ ...res.data.user, is_seller: res.data.user.is_seller }));
@@ -104,7 +104,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const deleteUser = async (userId: string) => {
     setLoading(true);
     try {
-      await axios.delete(`http://localhost:5000/api/auth/profile/${userId}`);
+  await api.delete(`api/auth/profile/${userId}`);
       setUser(null);
     } catch (err) {
       throw err;
@@ -116,7 +116,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const getAllUsers = async (): Promise<User[]> => {
     setLoading(true);
     try {
-      const res = await axios.get('/api/auth/users');
+  const res = await api.get('api/auth/users');
       return res.data.users;
     } catch (err) {
       throw err;
@@ -128,7 +128,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const updateUserRole = async (userId: string, isAdmin: boolean, isSeller: boolean) => {
     setLoading(true);
     try {
-      await axios.put(`/api/auth/role/${userId}`, { is_admin: isAdmin, is_seller: isSeller });
+  await api.put(`api/auth/role/${userId}`, { is_admin: isAdmin, is_seller: isSeller });
     } catch (err) {
       throw err;
     } finally {
